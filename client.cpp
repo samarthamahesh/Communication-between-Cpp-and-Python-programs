@@ -4,15 +4,14 @@
 #include <unistd.h>
 #include <cstdlib>
 #include <cstring>
-#define PORT 8080
-#define MAX_LEN 1000
-
-using namespace std;
+static const unsigned PORT = 8080;
+static const unsigned MAX_LEN = 1000;
 
 int main(int argc, char const *argv[]) {
 	int sock = 0, valread;
 	struct sockaddr_in serv_addr;
 	char *hello = (char *)malloc(sizeof(char)*MAX_LEN);
+
 	std::cout << "Your message: ";
 	std::cin >> hello;
 	char buffer[1024] = {0};
