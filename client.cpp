@@ -1,4 +1,4 @@
-#include <bits/stdc++.h>
+#include <iostream>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
@@ -13,11 +13,11 @@ int main(int argc, char const *argv[]) {
 	int sock = 0, valread;
 	struct sockaddr_in serv_addr;
 	char *hello = (char *)malloc(sizeof(char)*MAX_LEN);
-	cout << "Your message: ";
-	fgets(hello, MAX_LEN, stdin);
+	std::cout << "Your message: ";
+	std::cin >> hello;
 	char buffer[1024] = {0};
 	if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-		cout << "Socket creation error" << endl;
+		std::cout << "Socket creation error" << std::endl;
 		return -1;
 	}
 
@@ -26,18 +26,18 @@ int main(int argc, char const *argv[]) {
 	
 	// Convert IPv4 and IPv6 addresses from text to binary form 
 	if(inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr)<=0)	{
-		cout << "Invalid address/ Address not supported" << endl;
+		std::cout << "Invalid address/ Address not supported" << std::endl;
 		return -1;
 	}
 
 	if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
-		cout << "Connection Failed" << endl;
+		std::cout << "Connection Failed" << std::endl;
 		return -1;
 	}
 	send(sock , hello , strlen(hello) , 0);
-	cout << "Message sent" << endl;
+	std::cout << "Message sent" << std::endl;
 
 	valread = read(sock, buffer, 1024);
-	cout << "Message from server: " << buffer << endl;
+	std::cout << "Message from server: " << buffer << std::endl;
 	return 0;
 }
