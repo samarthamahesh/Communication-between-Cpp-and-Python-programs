@@ -10,10 +10,9 @@ static const unsigned MAX_LEN = 1000;
 int main(int argc, char const *argv[]) {
 	int sock = 0, valread;
 	struct sockaddr_in serv_addr;
-	char *hello = (char *)malloc(sizeof(char)*MAX_LEN);
-
+	std::string hello;
 	std::cout << "Your message: ";
-	std::cin >> hello;
+	std::getline(std::cin, hello);
 	char buffer[1024] = {0};
 	if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
 		std::cout << "Socket creation error" << std::endl;
@@ -33,7 +32,7 @@ int main(int argc, char const *argv[]) {
 		std::cout << "Connection Failed" << std::endl;
 		return -1;
 	}
-	send(sock , hello , strlen(hello) , 0);
+	send(sock, hello.c_str(), hello.length(), 0);
 	std::cout << "Message sent" << std::endl;
 
 	valread = read(sock, buffer, 1024);
