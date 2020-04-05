@@ -1,41 +1,31 @@
 #include <iostream>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-#include <cstdlib>
-#include <cstring>
+#include <boost/asio.hpp>
+
 static const unsigned PORT = 8080;
-static const unsigned MAX_LEN = 1000;
 
 int main(int argc, char const *argv[]) {
-	int sock = 0, valread;
-	struct sockaddr_in serv_addr;
+	boost::asio::io_service io_service;
+	boost::asio::ip::tcp::socket socket(io_service);
+	
+	socket.connect(boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string("127.0.0.1"), PORT));
 	std::string hello;
 	std::cout << "Your message: ";
 	std::getline(std::cin, hello);
-	char buffer[1024] = {0};
-	if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-		std::cout << "Socket creation error" << std::endl;
-		return -1;
-	}
-
-	serv_addr.sin_family = AF_INET;
-	serv_addr.sin_port = htons(PORT);
 	
-	// Convert IPv4 and IPv6 addresses from text to binary form 
-	if(inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr)<=0)	{
-		std::cout << "Invalid address/ Address not supported" << std::endl;
-		return -1;
+	boost::system::error_code error;
+	boost::asio::write(socket, boost::asio::buffer(hello), error);
+	if(!error) {
+		std::cout << "Message sent" << std::endl;
+	} else {
+		std::cout << "Send failed: " << error.message() << std::endl;
 	}
 
-	if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
-		std::cout << "Connection Failed" << std::endl;
-		return -1;
+	boost::asio::streambuf receive_buffer;
+	boost::asio::read(socket, receive_buffer, boost::asio::transfer_all(), error);
+	if(error && error != boost::asio::error::eof) {
+		std::cout << "Receive failed: " << error.message() << std::endl;
+	} else {
+		std::string data = boost::asio::buffer_cast<const char*>(receive_buffer.data());
+		std::cout << data << std::endl;
 	}
-	send(sock, hello.c_str(), hello.length(), 0);
-	std::cout << "Message sent" << std::endl;
-
-	valread = read(sock, buffer, 1024);
-	std::cout << "Message from server: " << buffer << std::endl;
-	return 0;
 }
