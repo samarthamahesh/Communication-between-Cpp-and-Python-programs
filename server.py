@@ -1,19 +1,21 @@
-import socket
+from twisted.internet.protocol import Factory, Protocol
+from twisted.internet.endpoints import TCP4ServerEndpoint
+from twisted.internet import reactor
 
-serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-host = '127.0.0.1'
-port = 8080
+class QOTDFactory(Factory):
+    def buildProtocol(self, addr):
+        print(addr)
+        return QOTD()
 
-serversocket.bind((host, port))
-serversocket.listen()
+class QOTD(Protocol):
 
-while True:
-    clientsocket, addr = serversocket.accept()
-    print("Connection form %s" % str(addr))
+    def dataReceived(self, data):
+        print(data)
+        msg = 'Thanks for connecting!!'
+        self.transport.write(msg.encode('ascii'))
+        self.transport.loseConnection()
 
-    receivedmsg = clientsocket.recv(1000)
-    print("Message from client: ", receivedmsg)
-
-    msg = 'Thanks for connecting\n'
-    clientsocket.send(msg.encode('ascii'))
-    clientsocket.close()
+if __name__ == '__main__':
+    endpoint = TCP4ServerEndpoint(reactor, 8080)
+    endpoint.listen(QOTDFactory())
+    reactor.run()
