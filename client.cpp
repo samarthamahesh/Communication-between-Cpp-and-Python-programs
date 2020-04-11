@@ -26,6 +26,6 @@ int main(int argc, char const *argv[]) {
 		std::cout << "Receive failed: " << error.message() << std::endl;
 	} else {
 		std::string data = boost::asio::buffer_cast<const char*>(receive_buffer.data());
-		std::cout << data << std::endl;
+		std::cout << "Message from server: " << data << std::endl;
 	}
 }

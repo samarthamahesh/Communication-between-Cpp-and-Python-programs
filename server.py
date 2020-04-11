@@ -10,7 +10,7 @@ class QOTDFactory(Factory):
 class QOTD(Protocol):
 
     def dataReceived(self, data):
-        print(data)
+        print('Message from client:', data.decode('ascii'), "\n")
         msg = 'Thanks for connecting!!'
         self.transport.write(msg.encode('ascii'))
         self.transport.loseConnection()
